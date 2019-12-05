@@ -1,7 +1,6 @@
 class PlayerState:
 
 	def __init__( self, left, right ):
-		# error check
 		if type( left ) is not int or type( right ) is not int:
 			print( "Warning: Hands must be sent in as lists" )
 			return None
@@ -9,7 +8,6 @@ class PlayerState:
 			print( "Warning: Each hand only has 5 fingers!" )
 			return None
 		
-		# assign values
 		self.left = left
 		self.right = right
 	
