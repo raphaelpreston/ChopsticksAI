@@ -14,3 +14,10 @@ class PlayerState:
 	def __eq__( self, other ):
 		return ( self.left == other.right and self.right == other.left or
 			self.left == other.left and self.right == other.right )
+
+	def __str__( self ):
+		# return '_' * ( 5 - self.left ) + '|' * self.left + ' ' + '|' * self.right + '_' * ( 5 - self.right )
+		return '|' * self.left + '_' * ( 5 - self.left ) + ' ' + '|' * self.right + '_' * ( 5 - self.right )
+
+	def __repr__( self ):
+		return self.__str__()
