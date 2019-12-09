@@ -1,37 +1,45 @@
 from PlayerState import PlayerState
 from GameState import GameState
 
-# # all ways to have a hand
-# allHands = [ i for i in range( 0, 6 ) ]
+# all ways to have a hand
+allHands = [ i for i in range( 0, 5 ) ]
 
-# # all ways to have a combination of two hands
-# allPlayerStates = []
-# for left in allHands:
-# 	for right in allHands:
-# 		ps = PlayerState( left, right )
-# 		if ps not in allPlayerStates:
-# 			if ps.left != 5 or ps.right != 5: # five and five can never happen
-# 				allPlayerStates.append( ps )
-# for state in allPlayerStates:
-# 	print( state )
-# print( len( allPlayerStates ) )
-
-# # all possible game states
-# allGameStates = [ GameState( p1, p2 ) for p1 in allPlayerStates for p2 in allPlayerStates ]
-# for state in allGameStates:
-# 	print( state )
-# print( len( allGameStates ) )
-
-p1 = PlayerState( 3, 0 )
-p2 = PlayerState( 2, 4 )
-gs = GameState( p1, p2, 2 )
-
-print(gs.isTerminal())
-print( "Current State" )
-print( gs )
-print ( '---' )
-for state in gs.nextStates():
+# all ways to have a combination of two hands
+allPlayerStates = []
+for left in allHands:
+	for right in allHands:
+		ps = PlayerState( left, right )
+		if ps not in allPlayerStates:
+			allPlayerStates.append( ps )
+for state in allPlayerStates:
 	print( state )
+print( len( allPlayerStates ) )
+
+# all possible game states
+allGameStates = [ GameState( p1, p2 ) for p1 in allPlayerStates for p2 in allPlayerStates
+	if p1.left != 0 or p1.right != 0 or p2.left != 0 or p2.right != 0
+]
+for state in allGameStates:
+	print( state )
+print( len( allGameStates ) )
+
+# counting 224
+
+
+
+
+# p1 = PlayerState( 3, 0 )
+# p2 = PlayerState( 2, 4 )
+# gs = GameState( p1, p2, 2 )
+
+# print(gs.isTerminal())
+# print( "Current State" )
+# print( gs )
+# print ( '---' )
+# s = set()
+# for state in gs.nextStates():
+# 	s.add(state)
+# 	print( state )
 
 
 
