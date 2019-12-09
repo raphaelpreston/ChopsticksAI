@@ -22,10 +22,11 @@ from GameState import GameState
 # 	print( state )
 # print( len( allGameStates ) )
 
-p1 = PlayerState( 4, 2 )
-p2 = PlayerState( 2, 1 )
-gs = GameState( p1, p2 )
+p1 = PlayerState( 3, 0 )
+p2 = PlayerState( 2, 4 )
+gs = GameState( p1, p2, 2 )
 
+print(gs.isTerminal())
 print( "Current State" )
 print( gs )
 print ( '---' )

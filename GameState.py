@@ -8,7 +8,7 @@ class GameState:
 			print( "Warning: You gotta play with your hands!" )
 			return None
 		if type( turn ) is not int or not 1 <= turn <= 2:
-			print( "Warning: That's not a valid turn!" )
+			print( "Warning: {} ({}) is not a valid turn!".format( turn, type( turn ) ) )
 			return None
 
 		self.p1 = p1
@@ -24,24 +24,43 @@ class GameState:
 			opp = self.p1
 		
 		pHands = [ player.left, player.right ]
-		oppHands = [ opp.left, opp.right ]
+
+		# strike move
+		attackingPHands = [ hand for hand in pHands if hand > 0 ]
 		nextPlayerStates = [ PlayerState( player.left, player.right ) ]
 		nextOppStates = [
-			PlayerState( opp.left, ( pHand + opp.right ) % 5 ) for pHand in pHands
+			PlayerState( opp.left, ( pHand + opp.right ) % 5 ) for pHand in attackingPHands
 		] + [
-			PlayerState( ( pHand + opp.left ) % 5, opp.right ) for pHand in pHands
+			PlayerState( ( pHand + opp.left ) % 5, opp.right ) for pHand in attackingPHands
+		]
+		strikeMoveStates = [
+				GameState( pState, oppState, self.nextTurn() ) if self.turn == 1 else
+				GameState( oppState, pState, self.nextTurn() )
+			for pState in nextPlayerStates for oppState in nextOppStates
 		]
 
-		# TODO: Add split functionality
+		# split move
+		splitMoveStates = []
+		if any( hand == 0 for hand in pHands ): # a split is allowed
+			if player.left == 0:
+				nextPlayerStates = [
+					PlayerState( player.left + i, player.right - i )
+						for i in range( 1, player.right )
+				]
+			else:
+				nextPlayerStates = [
+					PlayerState( player.left - i, player.right + i )
+						for i in range( 1, player.left )
+				]
+			
+			nextOppStates = [ PlayerState( opp.left, opp.right ) ]
+			splitMoveStates += [
+					GameState( pState, oppState, self.nextTurn() ) if self.turn == 1 else
+					GameState( oppState, pState, self.nextTurn() )
+				for pState in nextPlayerStates for oppState in nextOppStates
+			]
 
-		if self.turn == 1:
-			nextStates = [ GameState( pState, oppState )
-				for pState in nextPlayerStates for oppState in nextOppStates ]
-		else:
-			nextStates = [ GameState( oppState, pState )
-				for pState in nextPlayerStates for oppState in nextOppStates ]
-
-		return nextStates
+		return strikeMoveStates + splitMoveStates
 
 	def nextTurn( self ):
 		if self.turn == 1:
@@ -49,20 +68,15 @@ class GameState:
 		elif self.turn == 2:
 			return 1
 		else:
-			print( "Warning: That's not a valid turn!" )
+			print( "Warning: {} is not a valid turn!".format( self.turn ) )
 			return None
 
 	def __eq__( self, other ):
 		return self.p1 == other.p1 and self.p2 == other.p2
 	
-	# a state is terminal iff either player has a hand with 5 fingers up
-	# could use dp to be super efficient if we add more hands
+	# a state is terminal iff either player has two hands with 0 fingers
 	def isTerminal( self ):
-		for p1Hand in [ self.p1.left, self.p1.right ]:
-			for p2Hand in [ self.p2.left, self.p2.right ]:
-				if p1Hand + p2Hand == 5:
-					return True
-		return False
+		return self.p1.left == 0 and self.p1.right == 0 or self.p2.left == 0 and self.p2.right == 0
 
 	def __str__( self ):
 		return '{} {}-{} {}'.format( self.p1, '<' if self.turn == 1 else '—', '>' if self.turn == 2 else '—', self.p2 )
