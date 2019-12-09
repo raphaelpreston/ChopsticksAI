@@ -73,7 +73,14 @@ class GameState:
 
 	def __eq__( self, other ):
 		return self.p1 == other.p1 and self.p2 == other.p2
+		# return hash( self ) == hash( other )
 	
+	def compScore( self ):
+		return self.p1.left * ( 5**3 ) + self.p1.right * ( 5**2 ) + self.p2.left * ( 5**1 ) + self.p2.right * ( 5**0 )
+
+	def __lt__( self, other ):
+		return self.compScore() < other.compScore()
+
 	# a state is terminal iff either player has two hands with 0 fingers
 	def isTerminal( self ):
 		return self.p1.left == 0 and self.p1.right == 0 or self.p2.left == 0 and self.p2.right == 0
@@ -85,4 +92,6 @@ class GameState:
 		return self.__str__()
 
 	def __hash__( self ):
-		return hash( repr( self ) )
+		# order between players matters but order within a player's hands doesnt
+		s = '{}_{}'.format( hash( self.p1 ), hash( self.p2 ) )
+		return hash( s )

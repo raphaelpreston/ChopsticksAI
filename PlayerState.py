@@ -12,12 +12,22 @@ class PlayerState:
 		self.right = right
 	
 	def __eq__( self, other ):
-		return ( self.left == other.right and self.right == other.left or
-			self.left == other.left and self.right == other.right )
+		# return ( self.left == other.right and self.right == other.left or
+		# 	self.left == other.left and self.right == other.right )
+		return hash( self ) == hash( other )
 
 	def __str__( self ):
-		# return '_' * ( 5 - self.left ) + '|' * self.left + ' ' + '|' * self.right + '_' * ( 5 - self.right )
 		return '|' * self.left + '_' * ( 5 - self.left ) + ' ' + '|' * self.right + '_' * ( 5 - self.right )
 
 	def __repr__( self ):
 		return self.__str__()
+
+	def __hash__( self ):
+		# sort the hands because order within a player's hands doesn't matter
+		if self.left < self.right:
+			smallerHand = self.left
+			biggerHand = self.right
+		else:
+			smallerHand = self.right
+			biggerHand = self.left
+		return hash( '|' * smallerHand + '_' * ( 5 - biggerHand ) + ' ' + '|' * smallerHand + '_' * ( 5 - biggerHand ) )
