@@ -71,25 +71,24 @@ class GameState:
 			print( "Warning: {} is not a valid turn!".format( self.turn ) )
 			return None
 
-	def __eq__( self, other ):
-		return self.p1 == other.p1 and self.p2 == other.p2
-		# return hash( self ) == hash( other )
-	
-	def compScore( self ):
-		return self.p1.left * ( 5**3 ) + self.p1.right * ( 5**2 ) + self.p2.left * ( 5**1 ) + self.p2.right * ( 5**0 )
-
-	def __lt__( self, other ):
-		return self.compScore() < other.compScore()
-
 	# a state is terminal iff either player has two hands with 0 fingers
 	def isTerminal( self ):
 		return self.p1.left == 0 and self.p1.right == 0 or self.p2.left == 0 and self.p2.right == 0
+	
+	def sortScore( self ):
+		return self.p1.left * ( 5**3 ) + self.p1.right * ( 5**2 ) + self.p2.left * ( 5**1 ) + self.p2.right * ( 5**0 )
+
+	def __lt__( self, other ):
+		return self.sortScore() < other.sortScore()
 
 	def __str__( self ):
 		return '{} {}-{} {}'.format( self.p1, '<' if self.turn == 1 else '—', '>' if self.turn == 2 else '—', self.p2 )
 
 	def __repr__( self ):
 		return self.__str__()
+	
+	def __eq__( self, other ):
+		return hash( self ) == hash( other )
 
 	def __hash__( self ):
 		# order between players matters but order within a player's hands doesnt

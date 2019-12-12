@@ -11,11 +11,6 @@ class PlayerState:
 		self.left = left
 		self.right = right
 	
-	def __eq__( self, other ):
-		# return ( self.left == other.right and self.right == other.left or
-		# 	self.left == other.left and self.right == other.right )
-		return hash( self ) == hash( other )
-
 	def __str__( self ):
 		return '|' * self.left + '_' * ( 5 - self.left ) + ' ' + '|' * self.right + '_' * ( 5 - self.right )
 
@@ -31,3 +26,6 @@ class PlayerState:
 			smallerHand = self.right
 			biggerHand = self.left
 		return hash( '|' * smallerHand + '_' * ( 5 - biggerHand ) + ' ' + '|' * smallerHand + '_' * ( 5 - biggerHand ) )
+	
+	def __eq__( self, other ):
+		return hash( self ) == hash( other )
