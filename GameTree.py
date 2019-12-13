@@ -38,8 +38,12 @@ class GameTree:
 				if not self.nodeExists( nextState ): # not visited
 					q.append( nextState )
 					self.addEdge( curr, nextState, 1 )
-					
 
 	def printTree( self ):
-		pass
-		# root = curr
+		self.printTreeHelper( self.root, 0 )
+
+	def printTreeHelper( self, node, depth ):
+		print( '{}{}'.format( ' '*3*depth, node ) )
+		for child in self.getChildren( node ):
+			self.printTreeHelper( child, depth + 1 )
+		

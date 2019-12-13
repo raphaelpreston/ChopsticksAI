@@ -25,9 +25,10 @@ gt.expand()
 print( "There are {} reachable states".format( len( gt.getAllNodes() ) ) )
 
 # print states and their children
-for state in sorted( gt.getAllNodes() ):
-	print( state, ':' )
-	for child in gt.getChildren( state ):
-		print( '\t{}'.format( child ) )
+# for state in sorted( gt.getAllNodes() ):
+# 	print( state, ':' )
+# 	for child in gt.getChildren( state ):
+# 		print( '\t{}'.format( child ) )
 
 # print the actual gametree itself
+gt.printTree()
