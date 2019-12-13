@@ -15,7 +15,9 @@ class GameState:
 		self.p2 = p2
 		self.turn = turn
 
-	def nextStates( self ):
+	def nextStates( self ): # returns a set
+		if self.isTerminal(): # terminal states return no children
+			return set( [] )
 		if self.turn == 1:
 			player = self.p1
 			opp = self.p2
@@ -60,7 +62,7 @@ class GameState:
 				for pState in nextPlayerStates for oppState in nextOppStates
 			]
 
-		return strikeMoveStates + splitMoveStates
+		return set( strikeMoveStates + splitMoveStates )
 
 	def nextTurn( self ):
 		if self.turn == 1:
