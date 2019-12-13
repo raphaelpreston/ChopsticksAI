@@ -1,33 +1,44 @@
 from GameState import GameState
 class GameTree:
 
-	def __init__( self, root, nodes ):
+	def __init__( self, root ):
 		if type( root ) is not GameState:
 			raise TypeError( "Root must be type GameState" )
-		if type( nodes ) is not list:
-			raise TypeError( "Nodes must be ordered" )
 		self.root = root
-		self.nodes = set( nodes )
-		self.mat = {}
-		for node in nodes: # initialize 2D associative adjacency matrix
-			self.mat[ node ] = {}
-		
+		self.mat = { root: {} } # 2D associative adjacency matrix
+		# the first layer of the matrix functions as our known nodes
 
-	def addEdge( self, node1, node2, weight ): # directed
-		if node1 not in self.nodes:
-			print( 'Adding new node...' ) # TODO: Do we want this
-			self.nodes.add( node1 )
-			self.mat[ node1 ] = {}
-		if node2 not in self.nodes:
-			self.nodes.add( node2 )
+	def nodeExists( self, node ):
+		return node in self.getAllNodes()
+	
+	def getAllNodes( self ):
+		return set( self.mat.keys() )
+
+	def addNode( self, node ):
+		self.mat[ node ] = {}
+
+	def addEdge( self, node1, node2, weight=1 ): # directed
+		if not self.nodeExists( node1 ):
+			self.addNode( node1 )
+		if not self.nodeExists( node2 ):
+			self.addNode( node2 )
 		self.mat[ node1 ][ node2 ] = weight
 	
-	def children( self, node ):
+	def getChildren( self, node ):
 		return list( self.mat[ node ].keys() )
 
-
-	def expandToDepth( self ):
-		pass
+	def expand( self, startingNode=None, depth=None ):
+		start = startingNode if startingNode is not None else self.root
+		# assumes root already in self.nodes
+		q = [ start ]
+		while q:
+			curr = q.pop( 0 )
+			nextStates = curr.nextStates()
+			for nextState in nextStates:
+				if not self.nodeExists( nextState ): # not visited
+					q.append( nextState )
+					self.addEdge( curr, nextState, 1 )
+					
 
 	def printTree( self ):
 		pass
