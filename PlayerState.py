@@ -11,6 +11,9 @@ class PlayerState:
 		self.left = left
 		self.right = right
 	
+	def increaseHand( self ):
+		pass
+
 	def __str__( self ):
 		return '|' * self.left + '_' * ( 5 - self.left ) + ' ' + '|' * self.right + '_' * ( 5 - self.right )
 

@@ -15,6 +15,33 @@ class GameState:
 		self.p2 = p2
 		self.turn = turn
 
+	def getNextState( self, attackingHandNum, attackedHandNum ):
+		# get player/opponent
+		if self.turn == 1:
+			player = self.p1
+			opp = self.p2
+		else:
+			player = self.p2
+			opp = self.p1
+
+		# error check
+		if type( attackingHandNum ) is not int or type( attackedHandNum ) is not int:
+			raise Exception( "Hand attacking numbers must be ints!" )
+		if ( not any( hand == attackingHandNum for hand in [ player.left, player.right ] ) or
+				not any( hand == attackedHandNum for hand in [ opp.left, opp.right ] ) ):
+			raise Exception( "Hand with given number of fingers not found!" )
+		
+		# increase the appropriate opponent's hand
+		if opp.left == attackedHandNum:
+			opp.left = ( opp.left + attackingHandNum ) % 5
+		else:
+			opp.right = ( opp.right + attackingHandNum ) % 5
+		
+		# return new GameState
+		return ( GameState( player, opp, self.nextTurn() ) if self.turn == 1 else
+				GameState( opp, player, self.nextTurn() ) )
+
+
 	def nextStates( self ): # returns a set
 		if self.isTerminal(): # terminal states return no children
 			return set( [] )

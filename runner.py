@@ -24,11 +24,9 @@ gt = GameTree( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) )
 gt.expand()
 print( "There are {} reachable states".format( len( gt.getAllNodes() ) ) )
 
-# print states and their children
-# for state in sorted( gt.getAllNodes() ):
-# 	print( state, ':' )
-# 	for child in gt.getChildren( state ):
-# 		print( '\t{}'.format( child ) )
+# print the gametree
+# gt.printTree()
 
-# print the actual gametree itself
-gt.printTree()
+# gs = GameState( PlayerState( 1, 3 ), PlayerState( 2, 1 ), 1 )
+# print( gs ) 
+# print( gs.getNextState( 3, 2 ) )
