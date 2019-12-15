@@ -15,7 +15,35 @@ class GameState:
 		self.p2 = p2
 		self.turn = turn
 
-	def getNextState( self, attackingHandNum, attackedHandNum ):
+	def splitMove( self, intoHandLeft, intoHandRight ):
+		# get player/opponent			TODO: DON'T MAKE A NEW GAMESTATE AT END, JUST MODIFY CURRENT ONE, something like player.getAttacked, player.strike?
+		if self.turn == 1:
+			player = self.p1
+			opp = self.p2
+		else:
+			player = self.p2
+			opp = self.p1
+
+		# error check
+		if type( intoHandLeft ) is not int or type( intoHandRight ) is not int:
+			raise Exception( "Hand numbers must be ints!" )
+		if not any( hand == 0 for hand in [ player.left, player.right ] ):
+			raise Exception( "You can't split unless one of your hands has 0 fingers!" )
+		
+		sourceHand = player.left if player.right == 0 else player.right
+		if intoHandLeft + intoHandRight != sourceHand or intoHandLeft == 0 or intoHandRight == 0:
+			raise Exception( "That's not a valid split, silly!" )
+
+		# increase/decrease the appropriate player's hand
+		player.left = intoHandLeft
+		player.right = intoHandRight
+		
+		# return new GameState
+		return ( GameState( player, opp, self.nextTurn() ) if self.turn == 1 else
+				GameState( opp, player, self.nextTurn() ) )
+
+
+	def strikeMove( self, attackingHandNum, attackedHandNum ):
 		# get player/opponent
 		if self.turn == 1:
 			player = self.p1
@@ -68,7 +96,7 @@ class GameState:
 			for pState in nextPlayerStates for oppState in nextOppStates
 		]
 
-		# split move
+		# split move											#TODO: REPLACE THIS WITH SELF.SPLITMOVE AND SELF.STRIKEMOVE
 		splitMoveStates = []
 		if any( hand == 0 for hand in pHands ): # a split is allowed
 			if player.left == 0:
