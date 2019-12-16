@@ -14,20 +14,17 @@ class Game:
 		self.currState = initialState
 
 
-	def playOutGame( self, strat1, strat2 ):
+	def playOutGame( self, strat1, strat2 ): # returns path to get to end
 		# play to end 
 		path = []
 		while not self.currState.isTerminal():
 			path.append( self.currState )
 			if self.currState.turn == 1:
-				self.currState = strat1.calcNextMove( self ) # TODO: just send this self
+				self.currState = strat1.calcNextMove( self )
 			else:
 				self.currState = strat2.calcNextMove( self )
-
-		print( "Player {} wins!".format( self.currState.nextTurn() ) )
-		print( "Path:" )
-		for step in path:
-			print( ' {}'.format( step ) )
+		path.append( self.currState )
+		return path
 	
 
 	def playPlayerGame( self, strat ):

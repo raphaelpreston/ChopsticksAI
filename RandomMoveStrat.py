@@ -1,7 +1,14 @@
 from AIStrategy import AIStrategy
-from random import choice
+from math import floor
+import random
 
 class RandomMoveStrat( AIStrategy ):
 	
+	def __init__( self ):
+		self.splitsTotal = 0
+
 	def calcNextMove( self, game ):
-		return choice( list( game.currState.nextStates() ) )
+		nextState = random.choice( list( game.currState.getNextStates() ) )
+		if nextState in game.currState.getSplitMoves():
+			self.splitsTotal += 1
+		return nextState

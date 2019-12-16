@@ -2,6 +2,8 @@ from PlayerState import PlayerState
 from GameState import GameState
 from GameTree import GameTree
 from RandomMoveStrat import RandomMoveStrat
+from RandomWithRandomSplit import RandomWithRandomSplit
+from RandomWithMandatorySplit import RandomWithMandatorySplit
 from Game import Game
 
 # # all ways to have a hand
@@ -27,16 +29,59 @@ from Game import Game
 # print( "There are {} reachable states".format( len( gt.getAllNodes() ) ) )
 
 # # print the gametree
-# # gt.printTree()
-
-# # gs = GameState( PlayerState( 1, 3 ), PlayerState( 2, 1 ), 1 )
-# # print( gs ) 
-# # print( gs.getNextState( 3, 2 ) )
+# gt.printTree()
 
 
-strat = RandomMoveStrat()
+# player game
+
+# strat = RandomMoveStrat()
+# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+
+# game = Game( initialState )
+
+# game.playPlayerGame( strat )
+
+
+# AI playing against itself
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 
-game = Game( initialState )
 
-game.playPlayerGame( strat )
+n = 500000
+totalP1Wins = 0
+totalP2Wins = 0
+totalP1WinTurns = 0
+totalP2WinTurns = 0
+
+for i in range ( 0, n ):
+	# initialize strats
+	strat1 = RandomMoveStrat()
+	strat2 = RandomMoveStrat()
+
+	# init game
+	game = Game( initialState )
+
+	# play through
+	path = game.playOutGame( strat1, strat2 )
+	winner = game.currState.nextTurn()
+	turns = len( path ) - 1
+	winnerSplits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
+
+	print( "{}: Player {} wins in {} moves with {} splits!".format( i + 1, winner, turns, winnerSplits ) )
+	
+	# track the win and turns
+	if winner == 1:
+		totalP1Wins += 1
+		totalP1WinTurns += turns
+	else:
+		totalP2Wins += 1
+		totalP2WinTurns += turns
+
+	print( '' )
+	print( '------++++++====== RANDOM MOVE STRAT ======++++++------' )
+	print( 'Total games: {}'.format( i ) )
+	print( 'Total P1 wins: {}'.format( totalP1Wins ) )
+	print( 'Total P1 turns on wins: {}'.format( totalP1WinTurns ) )
+	print( 'Total P2 wins: {}'.format( totalP2Wins ) )
+	print( 'Total P2 turns on wins: {}'.format( totalP2WinTurns ) )
+	print( 'Average P1 turns per win: {}'.format( ( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-' ) )
+	print( 'Average P2 turns per win: {}'.format( ( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-'  ) )

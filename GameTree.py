@@ -33,7 +33,7 @@ class GameTree:
 		q = [ start ]
 		while q:
 			curr = q.pop( 0 )
-			nextStates = curr.nextStates()
+			nextStates = curr.getNextStates()
 			for nextState in nextStates:
 				if not self.nodeExists( nextState ): # not visited
 					q.append( nextState )
