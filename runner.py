@@ -2,7 +2,7 @@ from PlayerState import PlayerState
 from GameState import GameState
 from GameTree import GameTree
 from RandomMoveStrat import RandomMoveStrat
-from RandomWithRandomSplit import RandomWithRandomSplit
+from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from Game import Game
 
@@ -51,6 +51,10 @@ totalP1Wins = 0
 totalP2Wins = 0
 totalP1WinTurns = 0
 totalP2WinTurns = 0
+totalP1Splits = 0
+totalP2Splits = 0
+totalP1WinSplits = 0
+totalP2WinSplits = 0
 
 for i in range ( 0, n ):
 	# initialize strats
@@ -64,19 +68,21 @@ for i in range ( 0, n ):
 	path = game.playOutGame( strat1, strat2 )
 	winner = game.currState.nextTurn()
 	turns = len( path ) - 1
-	winnerSplits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
+	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
 
-	print( "{}: Player {} wins in {} moves with {} splits!".format( i + 1, winner, turns, winnerSplits ) )
+	print( '' )
+	print( "{}: Player {} wins in {} moves with {} splits!".format( i + 1, winner, turns, splits ) )
 	
-	# track the win and turns
+	# track the win, turns, and splits
 	if winner == 1:
 		totalP1Wins += 1
 		totalP1WinTurns += turns
+		totalP1WinSplits += splits
 	else:
 		totalP2Wins += 1
 		totalP2WinTurns += turns
+		totalP2WinSplits += splits
 
-	print( '' )
 	print( '------++++++====== RANDOM MOVE STRAT ======++++++------' )
 	print( 'Total games: {}'.format( i ) )
 	print( 'Total P1 wins: {}'.format( totalP1Wins ) )
@@ -85,3 +91,5 @@ for i in range ( 0, n ):
 	print( 'Total P2 turns on wins: {}'.format( totalP2WinTurns ) )
 	print( 'Average P1 turns per win: {}'.format( ( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-' ) )
 	print( 'Average P2 turns per win: {}'.format( ( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-'  ) )
+	print( 'Average P1 splits per win: {}'.format( ( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-' ) )
+	print( 'Average P2 splits per win: {}'.format( ( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-'  ) )
