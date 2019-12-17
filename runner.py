@@ -42,11 +42,15 @@ from Game import Game
 # game.playPlayerGame( strat )
 
 
+
+
 # AI playing against itself
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 
+# print every _ games
+printNum = 10
 
-n = 500000
+n = 10
 totalP1Wins = 0
 totalP2Wins = 0
 totalP1WinTurns = 0
@@ -56,10 +60,19 @@ totalP2Splits = 0
 totalP1WinSplits = 0
 totalP2WinSplits = 0
 
-for i in range ( 0, n ):
+stratsToPlay = [ 
+	[ RandomMoveStrat(), RandomMoveStrat() ],
+	[ RandomWithNoSplit(), RandomWithNoSplit() ],
+	[ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
+	[ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+	[ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+]
+
+for i in range ( 1, n + 1 ):
 	# initialize strats
-	strat1 = RandomMoveStrat()
-	strat2 = RandomMoveStrat()
+	stratPair = 1 # which pair to play
+	strat1 = stratsToPlay[ stratPair ][ 0 ]
+	strat2 = stratsToPlay[ stratPair ][ 1 ]
 
 	# init game
 	game = Game( initialState )
@@ -70,8 +83,7 @@ for i in range ( 0, n ):
 	turns = len( path ) - 1
 	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
 
-	print( '' )
-	print( "{}: Player {} wins in {} moves with {} splits!".format( i + 1, winner, turns, splits ) )
+	print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
 	
 	# track the win, turns, and splits
 	if winner == 1:
@@ -82,14 +94,21 @@ for i in range ( 0, n ):
 		totalP2Wins += 1
 		totalP2WinTurns += turns
 		totalP2WinSplits += splits
-
-	print( '------++++++====== RANDOM MOVE STRAT ======++++++------' )
-	print( 'Total games: {}'.format( i ) )
-	print( 'Total P1 wins: {}'.format( totalP1Wins ) )
-	print( 'Total P1 turns on wins: {}'.format( totalP1WinTurns ) )
-	print( 'Total P2 wins: {}'.format( totalP2Wins ) )
-	print( 'Total P2 turns on wins: {}'.format( totalP2WinTurns ) )
-	print( 'Average P1 turns per win: {}'.format( ( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-' ) )
-	print( 'Average P2 turns per win: {}'.format( ( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-'  ) )
-	print( 'Average P1 splits per win: {}'.format( ( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-' ) )
-	print( 'Average P2 splits per win: {}'.format( ( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-'  ) )
+	if i % printNum == 0:
+		print( '{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}'.format( 
+			strat1.__class__.__name__,
+			strat2.__class__.__name__,
+			i,
+			totalP1Wins,
+			totalP2Wins,
+			totalP1WinTurns,
+			totalP2WinTurns,
+			totalP1WinSplits,
+			totalP2WinSplits,
+			float( totalP1Wins ) / float( i ), # p1 win %
+			float( totalP2Wins ) / float( i ), # p2 win %
+			( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 turns per win
+			( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 turns per win
+			( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 splits per win
+			( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 splits per win
+		))
