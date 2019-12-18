@@ -4,6 +4,7 @@ from GameTree import GameTree
 from RandomMoveStrat import RandomMoveStrat
 from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
+from CloserToFiveStrat import CloserToFiveStrat
 from Game import Game
 
 # # all ways to have a hand
@@ -32,13 +33,10 @@ from Game import Game
 # gt.printTree()
 
 
-# player game
-
-# strat = RandomMoveStrat()
+# # player game
+# strat = CloserToFiveStrat()
 # initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-
 # game = Game( initialState )
-
 # game.playPlayerGame( strat )
 
 
@@ -48,9 +46,9 @@ from Game import Game
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 
 # print every _ games
-printNum = 10
+printNum = 1000
 
-n = 10
+n = 5000000
 totalP1Wins = 0
 totalP2Wins = 0
 totalP1WinTurns = 0
@@ -61,16 +59,20 @@ totalP1WinSplits = 0
 totalP2WinSplits = 0
 
 stratsToPlay = [ 
-	[ RandomMoveStrat(), RandomMoveStrat() ],
-	[ RandomWithNoSplit(), RandomWithNoSplit() ],
-	[ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
+	# [ RandomMoveStrat(), RandomMoveStrat() ],
+	# [ RandomWithNoSplit(), RandomWithNoSplit() ],
+	# [ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
+	# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+	# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+	[ RandomMoveStrat(), CloserToFiveStrat() ],
+	[ CloserToFiveStrat(), RandomMoveStrat() ],
 	[ RandomWithMandatorySplit(), RandomWithNoSplit() ],
 	[ RandomWithNoSplit(), RandomWithMandatorySplit() ]
 ]
 
 for i in range ( 1, n + 1 ):
 	# initialize strats
-	stratPair = 1 # which pair to play
+	stratPair = 3 # which pair to play
 	strat1 = stratsToPlay[ stratPair ][ 0 ]
 	strat2 = stratsToPlay[ stratPair ][ 1 ]
 
@@ -83,7 +85,7 @@ for i in range ( 1, n + 1 ):
 	turns = len( path ) - 1
 	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
 
-	print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
+	# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
 	
 	# track the win, turns, and splits
 	if winner == 1:
