@@ -5,6 +5,7 @@ from RandomMoveStrat import RandomMoveStrat
 from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from CloserToFiveStrat import CloserToFiveStrat
+from WinProbStrat import WinProbStrat
 from Game import Game
 
 # # all ways to have a hand
@@ -33,84 +34,99 @@ from Game import Game
 # gt.printTree()
 
 
-# # player game
-# strat = CloserToFiveStrat()
-# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-# game = Game( initialState )
-# game.playPlayerGame( strat )
-
-
-
-
-# AI playing against itself
+# player game
+strat = WinProbStrat( 2 )
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+game = Game( initialState )
+game.playPlayerGame( strat )
 
-# print every _ games
-printNum = 1000
 
-n = 5000000
-totalP1Wins = 0
-totalP2Wins = 0
-totalP1WinTurns = 0
-totalP2WinTurns = 0
-totalP1Splits = 0
-totalP2Splits = 0
-totalP1WinSplits = 0
-totalP2WinSplits = 0
+# testing potential screwup:
+# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+# gt = GameTree( initialState )
+# gt.expand()
+# for node in gt.getAllNodes():
+# 	print(node)
+# gt.getChildren( "|____ _____ <-— ||___ ||___" ) # test children of this, for some reason wasn't working
 
-stratsToPlay = [ 
-	# [ RandomMoveStrat(), RandomMoveStrat() ],
-	# [ RandomWithNoSplit(), RandomWithNoSplit() ],
-	# [ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
-	# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
-	# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
-	[ RandomMoveStrat(), CloserToFiveStrat() ],
-	[ CloserToFiveStrat(), RandomMoveStrat() ],
-	[ RandomWithMandatorySplit(), RandomWithNoSplit() ],
-	[ RandomWithNoSplit(), RandomWithMandatorySplit() ]
-]
 
-for i in range ( 1, n + 1 ):
-	# initialize strats
-	stratPair = 3 # which pair to play
-	strat1 = stratsToPlay[ stratPair ][ 0 ]
-	strat2 = stratsToPlay[ stratPair ][ 1 ]
+# testing new MaxPayoffSearch structure
+# wbStrat = WinProbStrat( 5 )
+# print( dir( wbStrat ) )
 
-	# init game
-	game = Game( initialState )
 
-	# play through
-	path = game.playOutGame( strat1, strat2 )
-	winner = game.currState.nextTurn()
-	turns = len( path ) - 1
-	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
 
-	# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
+
+
+# # AI playing against itself
+# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+
+# # print every _ games
+# printNum = 1000
+
+# n = 5000000
+# totalP1Wins = 0
+# totalP2Wins = 0
+# totalP1WinTurns = 0
+# totalP2WinTurns = 0
+# totalP1Splits = 0
+# totalP2Splits = 0
+# totalP1WinSplits = 0
+# totalP2WinSplits = 0
+
+# stratsToPlay = [ 
+# 	# [ RandomMoveStrat(), RandomMoveStrat() ],
+# 	# [ RandomWithNoSplit(), RandomWithNoSplit() ],
+# 	# [ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
+# 	# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+# 	# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+# 	[ RandomMoveStrat(), CloserToFiveStrat() ],
+# 	[ CloserToFiveStrat(), RandomMoveStrat() ],
+# 	[ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+# 	[ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+# ]
+
+# for i in range ( 1, n + 1 ):
+# 	# initialize strats
+# 	stratPair = 3 # which pair to play
+# 	strat1 = stratsToPlay[ stratPair ][ 0 ]
+# 	strat2 = stratsToPlay[ stratPair ][ 1 ]
+
+# 	# init game
+# 	game = Game( initialState )
+
+# 	# play through
+# 	path = game.playOutGame( strat1, strat2 )
+# 	winner = game.currState.nextTurn()
+# 	turns = len( path ) - 1
+# 	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
+
+# 	# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
 	
-	# track the win, turns, and splits
-	if winner == 1:
-		totalP1Wins += 1
-		totalP1WinTurns += turns
-		totalP1WinSplits += splits
-	else:
-		totalP2Wins += 1
-		totalP2WinTurns += turns
-		totalP2WinSplits += splits
-	if i % printNum == 0:
-		print( '{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}'.format( 
-			strat1.__class__.__name__,
-			strat2.__class__.__name__,
-			i,
-			totalP1Wins,
-			totalP2Wins,
-			totalP1WinTurns,
-			totalP2WinTurns,
-			totalP1WinSplits,
-			totalP2WinSplits,
-			float( totalP1Wins ) / float( i ), # p1 win %
-			float( totalP2Wins ) / float( i ), # p2 win %
-			( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 turns per win
-			( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 turns per win
-			( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 splits per win
-			( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 splits per win
-		))
+# 	# track the win, turns, and splits
+# 	if winner == 1:
+# 		totalP1Wins += 1
+# 		totalP1WinTurns += turns
+# 		totalP1WinSplits += splits
+# 	else:
+# 		totalP2Wins += 1
+# 		totalP2WinTurns += turns
+# 		totalP2WinSplits += splits
+# 	if i % printNum == 0:
+# 		print( '{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}'.format( 
+# 			strat1.__class__.__name__,
+# 			strat2.__class__.__name__,
+# 			i,
+# 			totalP1Wins,
+# 			totalP2Wins,
+# 			totalP1WinTurns,
+# 			totalP2WinTurns,
+# 			totalP1WinSplits,
+# 			totalP2WinSplits,
+# 			float( totalP1Wins ) / float( i ), # p1 win %
+# 			float( totalP2Wins ) / float( i ), # p2 win %
+# 			( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 turns per win
+# 			( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 turns per win
+# 			( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 splits per win
+# 			( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 splits per win
+# 		))

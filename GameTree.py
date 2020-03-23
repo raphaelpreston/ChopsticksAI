@@ -25,6 +25,8 @@ class GameTree:
 		self.mat[ node1 ][ node2 ] = weight
 	
 	def getChildren( self, node ):
+		if not self.nodeExists( node ):
+			raise Exception( "Node '{}' doesn't exist in GameTree".format( node ) )
 		return list( self.mat[ node ].keys() )
 
 	def expand( self, startingNode=None, depth=None ):

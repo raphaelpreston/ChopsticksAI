@@ -8,7 +8,7 @@ class Game:
 
 		# initialize and construct GameTree for AI
 		self.gt = GameTree( initialState )
-		self.gt.expand()
+		self.gt.expand() # only happens once during initialization
 
 		# keep track of current state
 		self.currState = initialState

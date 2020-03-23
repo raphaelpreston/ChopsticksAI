@@ -50,7 +50,7 @@ class GameState:
 				GameState( opp, player, self.nextTurn() ) )
 
 	def getSplitMoves( self ):
-		if not self.canSplit():
+		if not self.canSplit() or self.isTerminal():
 			return set()
 		
 		# get player/opponent

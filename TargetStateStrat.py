@@ -1,0 +1,1 @@
+# strategy that uses some kind of heuristic to choose a target win state. If the AI is knocked off the path to that state, choose a new one.
