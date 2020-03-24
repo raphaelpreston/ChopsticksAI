@@ -4,5 +4,5 @@ class AIStrategy( ABC ):
 
 	# returns the best move given whoever's turn it is
 	@abstractmethod
-	def calcNextMove( self, gameState, gameTree ):
+	def calcNextMove( self, game ):
 		pass

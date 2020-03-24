@@ -2,6 +2,7 @@ from PlayerState import PlayerState
 from GameState import GameState
 from GameTree import GameTree
 from RandomMoveStrat import RandomMoveStrat
+from MaxPayoffSearchStrat import MaxPayoffSearchStrat
 from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from CloserToFiveStrat import CloserToFiveStrat
@@ -35,7 +36,7 @@ from Game import Game
 
 
 # player game
-strat = WinProbStrat( 2 )
+strat = MaxPayoffSearchStrat( 2 )
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 game = Game( initialState )
 game.playPlayerGame( strat )
@@ -43,17 +44,25 @@ game.playPlayerGame( strat )
 
 # testing potential screwup:
 # initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+# node = GameState( PlayerState( 1, 3 ), PlayerState( 1, 2 ), 2 )
 # gt = GameTree( initialState )
 # gt.expand()
+# allNodes = gt.getAllNodes()
+# for n in allNodes:
+# 	print(n)
+# 	if n == node:
+# 		print(n)
+# print( gt.nodeExists( node ) ) # THIS SHOULD BE FALSE, it does not exist
+
+# for child in gt.getChildren( node ):
+# 	print( child ) ### these are wrong, the turns are wrong.
+
+# gt.printTree()
 # for node in gt.getAllNodes():
 # 	print(node)
-# gt.getChildren( "|____ _____ <-— ||___ ||___" ) # test children of this, for some reason wasn't working
 
 
-# testing new MaxPayoffSearch structure
-# wbStrat = WinProbStrat( 5 )
-# print( dir( wbStrat ) )
-
+# this is wack, when you do it here manually it's fine, but there's a key error when you do it while playing
 
 
 

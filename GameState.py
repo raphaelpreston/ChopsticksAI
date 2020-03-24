@@ -170,5 +170,4 @@ class GameState:
 	def __hash__( self ):
 		# order between players matters but order within a player's hands doesnt
 		s = '{}_{}_{}'.format( hash( self.p1 ), hash( self.p2 ), hash( self.turn ) )
-		print( s )
 		return hash( s )

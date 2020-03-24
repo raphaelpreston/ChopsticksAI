@@ -15,6 +15,8 @@ class GameTree:
 		return set( self.mat.keys() )
 
 	def addNode( self, node ):
+		if type( node ) is not GameState:
+			raise TypeError( "Node to add must be type GameState" )
 		self.mat[ node ] = {}
 
 	def addEdge( self, node1, node2, weight=1 ): # directed
@@ -25,6 +27,8 @@ class GameTree:
 		self.mat[ node1 ][ node2 ] = weight
 	
 	def getChildren( self, node ):
+		if type( node ) is not GameState:
+			raise TypeError( "Node to search must be type GameState" )
 		if not self.nodeExists( node ):
 			raise Exception( "Node '{}' doesn't exist in GameTree".format( node ) )
 		return list( self.mat[ node ].keys() )
