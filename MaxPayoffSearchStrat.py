@@ -45,6 +45,9 @@ class MaxPayoffSearchStrat( AIStrategy ):
 
 	def calcNextMove( self, game ):
 		print( "Calculating best move..." )
+		# for node in sorted( list( game.gt.getAllNodes() ) ):
+		# 	print(node)
+		# print('------------')
 
 		gt = game.gt
 		currState = game.currState

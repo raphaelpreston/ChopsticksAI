@@ -7,6 +7,12 @@ from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from CloserToFiveStrat import CloserToFiveStrat
 from Game import Game
+# import resource
+# import sys
+
+# sys.setrecursionlimit(10**6)
+
+# resource.setrlimit(resource.RLIMIT_STACK, (10**6, 10**6))
 
 # # all ways to have a hand
 # allHands = [ i for i in range( 0, 5 ) ]
@@ -35,18 +41,40 @@ from Game import Game
 
 
 # player game
-strat = MaxPayoffSearchStrat( 5 ) # 1, 1, then 2, 2 throws an error for some reason
+strat = MaxPayoffSearchStrat( 6 )
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 game = Game( initialState )
 game.playPlayerGame( strat )
 
 
+# TODO next: build the tree up from the bottom to get the true values
+# would be cool to graph whether or not the AIs chance of winning goes up as the game goes forward
+
+
+# node = GameState( PlayerState( 3, 4 ), PlayerState( 1, 2 ), 2 )
+# node1 = cloneGameState( node )
+# print( node )
+# print( node1 )
+# print( node is node1 )
+# print( node == node1 )
+# arr = [ node ]
+# print( node1 in arr )
+# d = dict()
+# d[ node ] = "hi"
+# print(d[node1])
+
+
 # testing potential screwup:
 # initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 # node = GameState( PlayerState( 1, 0 ), PlayerState( 4, 2 ), 2 )
+# node1 = GameState( PlayerState( 0, 1 ), PlayerState( 2, 4 ), 2 )
+# a = [ node ]
+# print( node1 in a )
+
 # gt = GameTree( initialState )
 # gt.expand()
 # allNodes = gt.getAllNodes()
+
 # print( gt.getChildren( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
 # print( gt.nodeExists( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
 # nextStates = node.getNextStates()

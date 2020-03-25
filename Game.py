@@ -29,6 +29,7 @@ class Game:
 
 	def playPlayerGame( self, strat ):
 		while not self.currState.isTerminal():
+			print("GameTree length: {}".format( len( self.gt.getAllNodes() ) ) )
 			print( self.currState, '\n' )
 
 			# player's turn
@@ -38,7 +39,6 @@ class Game:
 					self.currState = self.currState.splitMove( int( playerMove[ 6 ] ), int( playerMove[ 8 ] ) )
 				else:
 					self.currState = self.currState.strikeMove( int( playerMove[ 0 ] ), int( playerMove[ 2 ] ) )
-			
 			# computer's turn
 			else:
 				print( "My turn!" )
