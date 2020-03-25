@@ -1,12 +1,18 @@
 from GameState import GameState
+from PlayerState import PlayerState
 class GameTree:
 
 	def __init__( self, root ):
+		# clone root so we don't mess up object references
+		root = self.cloneGameState( root )
 		if type( root ) is not GameState:
 			raise TypeError( "Root must be type GameState" )
 		self.root = root
 		self.mat = { root: {} } # 2D associative adjacency matrix
 		# the first layer of the matrix functions as our known nodes
+
+	def cloneGameState( self, node ):
+		return GameState( PlayerState( node.p1.left, node.p1.right ), PlayerState( node.p2.left, node.p2.right ), node.turn )
 
 	def nodeExists( self, node ):
 		return node in self.getAllNodes()
@@ -15,6 +21,7 @@ class GameTree:
 		return set( self.mat.keys() )
 
 	def addNode( self, node ):
+		node = self.cloneGameState( node )
 		if type( node ) is not GameState:
 			raise TypeError( "Node to add must be type GameState" )
 		self.mat[ node ] = {}
@@ -30,10 +37,20 @@ class GameTree:
 		if type( node ) is not GameState:
 			raise TypeError( "Node to search must be type GameState" )
 		if not self.nodeExists( node ):
-			raise Exception( "Node '{}' doesn't exist in GameTree".format( node ) )
+			# print('---')
+			# print(node in self.getAllNodes())
+			# testNode = GameState( PlayerState(1, 3), PlayerState(1, 2), 1)
+			# testNode1 = GameState( PlayerState(1, 2), PlayerState(2, 1), 1)
+			# print(testNode in self.getAllNodes())
+			# for n in sorted( list( self.getAllNodes() ) ):
+			# 	print("{} {} {} {}".format( n, node == n, testNode == n, testNode1 == n))
+			# print('---')
+			raise Exception( "Node '{}' doesn't exist in GameTree (len: {})".format( node, len( self.getAllNodes() ) ) )
 		return self.mat[ node ].keys()
 
 	def expand( self, startingNode=None, depth=None ):
+		if startingNode:
+			startingNode = self.cloneGameState( startingNode )
 		start = startingNode if startingNode is not None else self.root
 		# assumes root already in self.nodes
 		q = [ start ]
