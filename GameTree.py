@@ -31,9 +31,7 @@ class GameTree:
 			raise TypeError( "Node to search must be type GameState" )
 		if not self.nodeExists( node ):
 			raise Exception( "Node '{}' doesn't exist in GameTree".format( node ) )
-		k = list( self.mat[ node ].keys() )
-		k.sort()
-		return k # todo: no need to sort this
+		return self.mat[ node ].keys()
 
 	def expand( self, startingNode=None, depth=None ):
 		start = startingNode if startingNode is not None else self.root
@@ -42,7 +40,7 @@ class GameTree:
 		while q:
 			curr = q.pop( 0 )
 			nextStates = curr.getNextStates()
-			for nextState in nextStates:
+			for nextState in nextStates: # TODO: not necessary cus addEdge() checks
 				if not self.nodeExists( nextState ): # not visited
 					self.addNode( nextState ) # add node to matrix
 					self.addEdge( curr, nextState, 1 ) # add edge to matrix

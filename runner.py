@@ -6,7 +6,6 @@ from MaxPayoffSearchStrat import MaxPayoffSearchStrat
 from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from CloserToFiveStrat import CloserToFiveStrat
-from WinProbStrat import WinProbStrat
 from Game import Game
 
 # # all ways to have a hand
@@ -36,7 +35,7 @@ from Game import Game
 
 
 # player game
-strat = MaxPayoffSearchStrat( 2 )
+strat = MaxPayoffSearchStrat( 5 ) # 1, 1, then 2, 2 throws an error for some reason
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 game = Game( initialState )
 game.playPlayerGame( strat )
@@ -44,10 +43,41 @@ game.playPlayerGame( strat )
 
 # testing potential screwup:
 # initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-# node = GameState( PlayerState( 1, 3 ), PlayerState( 1, 2 ), 2 )
+# node = GameState( PlayerState( 1, 0 ), PlayerState( 4, 2 ), 2 )
 # gt = GameTree( initialState )
 # gt.expand()
 # allNodes = gt.getAllNodes()
+# print( gt.getChildren( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
+# print( gt.nodeExists( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
+# nextStates = node.getNextStates()
+# children = gt.getChildren(node)
+# for n in nextStates:
+# 	print(n)
+# print('---')
+# for n in children:
+# 	print(n)
+# with open("children.txt", "w+") as childrenF:
+# 	with open("nextStates.txt", "w+") as nextStatesF:
+# 		for node in allNodes:
+# 			childrenF.write("{}:\n".format(node))
+# 			nextStatesF.write("{}:\n".format(node))
+# 			nextStates = list(node.getNextStates())
+# 			children = list(gt.getChildren(node))
+# 			nextStates.sort()
+# 			children.sort()
+# 			for nextState in nextStates:
+# 				nextStatesF.write("    {}\n".format(nextState))
+# 			for child in children:
+# 				childrenF.write("    {}\n".format(child))
+			
+			# if (nextStates == children ):
+			# 	print('right')
+			# else:
+			# 	print('wrong')
+
+
+
+
 # for n in allNodes:
 # 	print(n)
 # 	if n == node:
