@@ -7,6 +7,7 @@ from RandomWithNoSplit import RandomWithNoSplit
 from RandomWithMandatorySplit import RandomWithMandatorySplit
 from CloserToFiveStrat import CloserToFiveStrat
 from Game import Game
+import json
 # import resource
 # import sys
 
@@ -41,159 +42,166 @@ from Game import Game
 
 
 # player game
-strat = MaxPayoffSearchStrat( 6 )
-initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-game = Game( initialState )
-game.playPlayerGame( strat )
+# strat = MaxPayoffSearchStrat( 8 )
+# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
+# game = Game( initialState )
+# game.playPlayerGame( strat )
 
 
 # TODO next: build the tree up from the bottom to get the true values
-# would be cool to graph whether or not the AIs chance of winning goes up as the game goes forward
+# TODO: would be cool to graph whether or not the AIs chance of winning goes up as the game goes forward
+# TODO: Another genetic strat that learns as it plays against the raw looking forward strat
 
 
-# node = GameState( PlayerState( 3, 4 ), PlayerState( 1, 2 ), 2 )
-# node1 = cloneGameState( node )
-# print( node )
-# print( node1 )
-# print( node is node1 )
-# print( node == node1 )
-# arr = [ node ]
-# print( node1 in arr )
-# d = dict()
-# d[ node ] = "hi"
-# print(d[node1])
+# AI playing against itself
+initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 
+# print every _ games
+printNum = 2
+n = 150 # number of games
+depth1 = 0 # edit this between consoles
 
-# testing potential screwup:
-# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-# node = GameState( PlayerState( 1, 0 ), PlayerState( 4, 2 ), 2 )
-# node1 = GameState( PlayerState( 0, 1 ), PlayerState( 2, 4 ), 2 )
-# a = [ node ]
-# print( node1 in a )
+for depth2 in range( 0, 9 + 1 ): # 10 total
+	totalP1Wins = 0
+	totalP2Wins = 0
+	totalP1WinTurns = 0
+	totalP2WinTurns = 0
+	totalP1Splits = 0
+	totalP2Splits = 0
+	totalP1WinSplits = 0
+	totalP2WinSplits = 0
 
-# gt = GameTree( initialState )
-# gt.expand()
-# allNodes = gt.getAllNodes()
+	stratsToPlay = [ # this doesn't reinitialize strats
+		# [ RandomMoveStrat(), RandomMoveStrat() ],
+		# [ RandomWithNoSplit(), RandomWithNoSplit() ],
+		# [ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
+		# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+		# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+		# [ RandomMoveStrat(), CloserToFiveStrat() ],
+		# [ CloserToFiveStrat(), RandomMoveStrat() ],
+		# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
+		# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
+		# [ MaxPayoffSearchStrat( depth1 ), MaxPayoffSearchStrat( depth2 ) ]
+	]
 
-# print( gt.getChildren( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
-# print( gt.nodeExists( GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 ) ) )
-# nextStates = node.getNextStates()
-# children = gt.getChildren(node)
-# for n in nextStates:
-# 	print(n)
-# print('---')
-# for n in children:
-# 	print(n)
-# with open("children.txt", "w+") as childrenF:
-# 	with open("nextStates.txt", "w+") as nextStatesF:
-# 		for node in allNodes:
-# 			childrenF.write("{}:\n".format(node))
-# 			nextStatesF.write("{}:\n".format(node))
-# 			nextStates = list(node.getNextStates())
-# 			children = list(gt.getChildren(node))
-# 			nextStates.sort()
-# 			children.sort()
-# 			for nextState in nextStates:
-# 				nextStatesF.write("    {}\n".format(nextState))
-# 			for child in children:
-# 				childrenF.write("    {}\n".format(child))
+	allTurnDataP1 = dict() # all data per turn over all i
+	allTurnDataP2 = dict()
+
+	for i in range ( 1, n + 1 ):
+		# initialize strats
+		stratPair = 0 # which pair to play
+		strat1 = MaxPayoffSearchStrat( depth1 )
+		strat2 = MaxPayoffSearchStrat( depth2 )
+
+		# init game
+		game = Game( initialState )
+
+		# play through
+		path = game.playOutGame( strat1, strat2 )
+		winner = game.currState.nextTurn()
+		turns = len( path ) - 1
+
+		splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
+		turnDataListP1 = strat1.turnData # modified for MaxPayoffSearchStrat
+		turnDataListP2 = strat2.turnData # modified for MaxPayoffSearchStrat
+
+		# print('p1:')
+		# print( json.dumps( turnDataListP1, indent=3 ) )
+		# print('p2:')
+		# print( json.dumps( turnDataListP2, indent=3 ) )
+
+		# add turn payoffs to total tracker
+		for k in range( 0, max( len( turnDataListP1 ), len( turnDataListP2 ) ) ):
+			if k < len( turnDataListP1 ):
+				singleTurnDataP1 = turnDataListP1[ k ]
+				turn = k*2 + 1 # 0th turn becomes 1st etc.
+				if turn not in allTurnDataP1:
+					allTurnDataP1[ turn ] = singleTurnDataP1
+				else:
+					allTurnDataP1[ turn ][ 'totalLosses' ] += singleTurnDataP1[ 'totalLosses' ]
+					allTurnDataP1[ turn ][ 'totalWins' ] += singleTurnDataP1[ 'totalWins' ]
+					allTurnDataP1[ turn ][ 'totalMoves' ] += singleTurnDataP1[ 'totalMoves' ]
+					allTurnDataP1[ turn ][ 'payoff' ] += singleTurnDataP1[ 'payoff' ]
+			if k < len( turnDataListP2 ):
+				singleTurnDataP2 = turnDataListP2[ k ]
+				turn = k*2 + 2 # reflect the global turn instead of the player's POV
+				if turn not in allTurnDataP2:
+					allTurnDataP2[ turn ] = singleTurnDataP2
+				else:
+					allTurnDataP2[ turn ][ 'totalLosses' ] += singleTurnDataP2[ 'totalLosses' ]
+					allTurnDataP2[ turn ][ 'totalWins' ] += singleTurnDataP2[ 'totalWins' ]
+					allTurnDataP2[ turn ][ 'totalMoves' ] += singleTurnDataP2[ 'totalMoves' ]
+					allTurnDataP2[ turn ][ 'payoff' ] += singleTurnDataP2[ 'payoff' ]
+
+		# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
+		
+		# track the win, turns, and splits
+		if winner == 1:
+			totalP1Wins += 1
+			totalP1WinTurns += turns
+			totalP1WinSplits += splits
+		else:
+			totalP2Wins += 1
+			totalP2WinTurns += turns
+			totalP2WinSplits += splits
+
+		if i % printNum == 0:
+			print( '{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}'.format(
+				"{}({})".format(strat1.__class__.__name__, depth1), # modified for depth
+				"{}({})".format(strat2.__class__.__name__, depth2), # modified for depth
+				i,
+				totalP1Wins,
+				totalP2Wins,
+				totalP1WinTurns,
+				totalP2WinTurns,
+				totalP1WinSplits,
+				totalP2WinSplits,
+				float( totalP1Wins ) / float( i ), # p1 win %
+				float( totalP2Wins ) / float( i ), # p2 win %
+				( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 turns per win
+				( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 turns per win
+				( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 splits per win
+				( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 splits per win
+			))
 			
-			# if (nextStates == children ):
-			# 	print('right')
-			# else:
-			# 	print('wrong')
+			# print( 'p1T:' )
+			# print( json.dumps( allTurnDataP1, indent=3 ) )
+			# print( 'p2T:' )
+			# print( json.dumps( allTurnDataP2, indent=3 ) )
 
+			with open( 'payoffs/{}-{}'.format(
+				"{}({})".format(strat1.__class__.__name__, depth1), # modified for depth
+				"{}({})".format(strat2.__class__.__name__, depth2) # modified for depth
+				), "a+") as turnsFile:
+				for turn in set( list( allTurnDataP1.keys() ) + list( allTurnDataP2.keys() ) ):
+					if turn in allTurnDataP1:
+						allDataForTurnP1 = allTurnDataP1[ turn ]
+					else:
+						allDataForTurnP1 = None
+					if turn in allTurnDataP2:
+						allDataForTurnP2 = allTurnDataP2[ turn ]
+					else:
+						allDataForTurnP2 = None
+					
+					totalWinsP1 = allDataForTurnP1[ 'totalWins' ] if allDataForTurnP1 is not None else None
+					totalLossesP1 = allDataForTurnP1[ 'totalLosses' ] if allDataForTurnP1 is not None else None
+					totalMovesP1 = allDataForTurnP1[ 'totalMoves' ] if allDataForTurnP1 is not None else None
+					totalPayoffP1 = allDataForTurnP1[ 'payoff' ] if allDataForTurnP1 is not None else None
 
+					totalWinsP2 = allDataForTurnP2[ 'totalWins' ] if allDataForTurnP2 is not None else None
+					totalLossesP2 = allDataForTurnP2[ 'totalLosses' ] if allDataForTurnP2 is not None else None
+					totalMovesP2 = allDataForTurnP2[ 'totalMoves' ] if allDataForTurnP2 is not None else None
+					totalPayoffP2 = allDataForTurnP2[ 'payoff' ] if allDataForTurnP2 is not None else None
 
-
-# for n in allNodes:
-# 	print(n)
-# 	if n == node:
-# 		print(n)
-# print( gt.nodeExists( node ) ) # THIS SHOULD BE FALSE, it does not exist
-
-# for child in gt.getChildren( node ):
-# 	print( child ) ### these are wrong, the turns are wrong.
-
-# gt.printTree()
-# for node in gt.getAllNodes():
-# 	print(node)
-
-
-# this is wack, when you do it here manually it's fine, but there's a key error when you do it while playing
-
-
-
-
-# # AI playing against itself
-# initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
-
-# # print every _ games
-# printNum = 1000
-
-# n = 5000000
-# totalP1Wins = 0
-# totalP2Wins = 0
-# totalP1WinTurns = 0
-# totalP2WinTurns = 0
-# totalP1Splits = 0
-# totalP2Splits = 0
-# totalP1WinSplits = 0
-# totalP2WinSplits = 0
-
-# stratsToPlay = [ 
-# 	# [ RandomMoveStrat(), RandomMoveStrat() ],
-# 	# [ RandomWithNoSplit(), RandomWithNoSplit() ],
-# 	# [ RandomWithMandatorySplit(), RandomWithMandatorySplit() ],
-# 	# [ RandomWithMandatorySplit(), RandomWithNoSplit() ],
-# 	# [ RandomWithNoSplit(), RandomWithMandatorySplit() ]
-# 	[ RandomMoveStrat(), CloserToFiveStrat() ],
-# 	[ CloserToFiveStrat(), RandomMoveStrat() ],
-# 	[ RandomWithMandatorySplit(), RandomWithNoSplit() ],
-# 	[ RandomWithNoSplit(), RandomWithMandatorySplit() ]
-# ]
-
-# for i in range ( 1, n + 1 ):
-# 	# initialize strats
-# 	stratPair = 3 # which pair to play
-# 	strat1 = stratsToPlay[ stratPair ][ 0 ]
-# 	strat2 = stratsToPlay[ stratPair ][ 1 ]
-
-# 	# init game
-# 	game = Game( initialState )
-
-# 	# play through
-# 	path = game.playOutGame( strat1, strat2 )
-# 	winner = game.currState.nextTurn()
-# 	turns = len( path ) - 1
-# 	splits = strat1.splitsTotal if winner == 1 else strat2.splitsTotal
-
-# 	# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
-	
-# 	# track the win, turns, and splits
-# 	if winner == 1:
-# 		totalP1Wins += 1
-# 		totalP1WinTurns += turns
-# 		totalP1WinSplits += splits
-# 	else:
-# 		totalP2Wins += 1
-# 		totalP2WinTurns += turns
-# 		totalP2WinSplits += splits
-# 	if i % printNum == 0:
-# 		print( '{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}'.format( 
-# 			strat1.__class__.__name__,
-# 			strat2.__class__.__name__,
-# 			i,
-# 			totalP1Wins,
-# 			totalP2Wins,
-# 			totalP1WinTurns,
-# 			totalP2WinTurns,
-# 			totalP1WinSplits,
-# 			totalP2WinSplits,
-# 			float( totalP1Wins ) / float( i ), # p1 win %
-# 			float( totalP2Wins ) / float( i ), # p2 win %
-# 			( float( totalP1WinTurns ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 turns per win
-# 			( float( totalP2WinTurns ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 turns per win
-# 			( float( totalP1WinSplits ) / float( totalP1Wins ) ) if totalP1Wins != 0 else '-', # average p1 splits per win
-# 			( float( totalP2WinSplits ) / float( totalP2Wins ) ) if totalP2Wins != 0 else '-', # average p2 splits per win
-# 		))
+					turnsFile.write( '{},{},{},{},{},{},{},{},{},{}\n'.format(
+						i,
+						turn,
+						float( totalWinsP1 ) / float( i ) if totalWinsP1 is not None else '-' if totalWinsP1 != 0 else 0,
+						float( totalWinsP2 ) / float( i ) if totalWinsP2 is not None else '-' if totalWinsP2 != 0 else 0,
+						float( totalLossesP1 ) / float( i ) if totalLossesP1 is not None else '-' if totalLossesP1 != 0 else 0,
+						float( totalLossesP2 ) / float( i )if totalLossesP2 is not None else '-' if totalLossesP2 != 0 else 0,
+						float( totalMovesP1 ) / float( i )if totalMovesP1 is not None else '-' if totalMovesP1 != 0 else 0,
+						float( totalMovesP2 ) / float( i )if totalMovesP2 is not None else '-' if totalMovesP2 != 0 else 0,
+						float( totalPayoffP1 ) / float( i ) if totalPayoffP1 is not None else '-' if totalPayoffP1 != 0 else 0,
+						float( totalPayoffP2 ) / float( i ) if totalPayoffP2 is not None else '-' if totalPayoffP2 != 0 else 0,
+					))

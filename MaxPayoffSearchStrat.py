@@ -16,6 +16,7 @@ class MaxPayoffSearchStrat( AIStrategy ):
 			print( "Depth gotta be an int dude" )
 			return
 		self.splitsTotal = 0
+		self.turnData = [] # keep track of each turns data
 		self.depth = depth + 1 # more intuitive this way
 
 
@@ -44,7 +45,7 @@ class MaxPayoffSearchStrat( AIStrategy ):
 	
 
 	def calcNextMove( self, game ):
-		print( "Calculating best move..." )
+		# print( "Calculating best move..." )
 		# for node in sorted( list( game.gt.getAllNodes() ) ):
 		# 	print(node)
 		# print('------------')
@@ -56,6 +57,7 @@ class MaxPayoffSearchStrat( AIStrategy ):
 		potentialNextStates = gt.getChildren( currState )
 		for nextState in potentialNextStates: # AI's potential moves
 			if nextState.isTerminal(): # can't move into a loss
+				# print("Winning!")
 				return nextState
 		
 		# print( "There's no way for me to win... let's see what I can do" )
@@ -94,21 +96,28 @@ class MaxPayoffSearchStrat( AIStrategy ):
 		# choose which move to return # TODO: could be another sub-function here # break a tie by the number of total end states! Also maybe weight a potential win as heavier than a loss? Like 1 win and 1 loss doesn't = 0. Maybe the number of states that are actual end states is better?
 		lenBest = len( bestNextStates )
 		if lenBest == 1:
-			print( "Well, I've got one clear option!" )
+			# print( "Well, I've got one clear option!" )
 			nextState = bestNextStates.pop()
 		else: # there's a tie
 			contenders = potentialNextStates if lenBest == 0 else bestNextStates
-			print( "No single best option, choosing randomly between {} ties".format( len( contenders ) ) )
+			# print( "No single best option, choosing randomly between {} ties".format( len( contenders ) ) )
 			nextState = random.choice( list( contenders ) )
 		
-		for option in allOptions:
-			print("{} ==> {} wins, {} losses, and {} total end states. Payoff = {}{}".format( option, allOptions[ option ][ 'wins' ], allOptions[ option ][ 'losses' ], allOptions[ option ][ 'total' ], allOptions[ option ][ 'payoff' ], " <---" if option==nextState else " *" if option in bestNextStates else "" ) )
+		# for option in allOptions:
+		# 	print("{} ==> {} wins, {} losses, and {} total end states. Payoff = {}{}".format( option, allOptions[ option ][ 'wins' ], allOptions[ option ][ 'losses' ], allOptions[ option ][ 'total' ], allOptions[ option ][ 'payoff' ], " <---" if option==nextState else " *" if option in bestNextStates else "" ) )
 
 		# track splits
 		if nextState in game.currState.getSplitMoves():
 			self.splitsTotal += 1
 
-		print("------")
+		# track payoff
+		self.turnData.append( {
+			'totalLosses': self.totalLosses,
+			'totalWins': self.totalWins,
+			'totalMoves': self.totalMoves,
+			'payoff': payoff
+		} )
+		# print("------")
 		return nextState
 
 
