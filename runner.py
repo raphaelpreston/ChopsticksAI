@@ -57,10 +57,9 @@ import json
 initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 
 # print every _ games
-printNum = 2
-n = 150 # number of games
+printNum = 1
+n = 50 # number of games
 depth1 = 0 # edit this between consoles
-
 for depth2 in range( 0, 9 + 1 ): # 10 total
 	totalP1Wins = 0
 	totalP2Wins = 0
@@ -89,7 +88,7 @@ for depth2 in range( 0, 9 + 1 ): # 10 total
 
 	for i in range ( 1, n + 1 ):
 		# initialize strats
-		stratPair = 0 # which pair to play
+		# stratPair = 0 # which pair to play
 		strat1 = MaxPayoffSearchStrat( depth1 )
 		strat2 = MaxPayoffSearchStrat( depth2 )
 
@@ -117,23 +116,28 @@ for depth2 in range( 0, 9 + 1 ): # 10 total
 				turn = k*2 + 1 # 0th turn becomes 1st etc.
 				if turn not in allTurnDataP1:
 					allTurnDataP1[ turn ] = singleTurnDataP1
+					allTurnDataP1[ turn ][ 'count' ] = 1
 				else:
 					allTurnDataP1[ turn ][ 'totalLosses' ] += singleTurnDataP1[ 'totalLosses' ]
 					allTurnDataP1[ turn ][ 'totalWins' ] += singleTurnDataP1[ 'totalWins' ]
 					allTurnDataP1[ turn ][ 'totalMoves' ] += singleTurnDataP1[ 'totalMoves' ]
 					allTurnDataP1[ turn ][ 'payoff' ] += singleTurnDataP1[ 'payoff' ]
+					allTurnDataP1[ turn ][ 'count' ] += 1
 			if k < len( turnDataListP2 ):
 				singleTurnDataP2 = turnDataListP2[ k ]
 				turn = k*2 + 2 # reflect the global turn instead of the player's POV
 				if turn not in allTurnDataP2:
 					allTurnDataP2[ turn ] = singleTurnDataP2
+					allTurnDataP2[ turn ][ 'count' ] = 1
 				else:
 					allTurnDataP2[ turn ][ 'totalLosses' ] += singleTurnDataP2[ 'totalLosses' ]
 					allTurnDataP2[ turn ][ 'totalWins' ] += singleTurnDataP2[ 'totalWins' ]
 					allTurnDataP2[ turn ][ 'totalMoves' ] += singleTurnDataP2[ 'totalMoves' ]
 					allTurnDataP2[ turn ][ 'payoff' ] += singleTurnDataP2[ 'payoff' ]
+					allTurnDataP2[ turn ][ 'count' ] += 1
 
-		# print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
+
+		print( "{}: Player {} wins in {} moves with {} splits!".format( i, winner, turns, splits ) )
 		
 		# track the win, turns, and splits
 		if winner == 1:
@@ -182,26 +186,18 @@ for depth2 in range( 0, 9 + 1 ): # 10 total
 						allDataForTurnP2 = allTurnDataP2[ turn ]
 					else:
 						allDataForTurnP2 = None
-					
-					totalWinsP1 = allDataForTurnP1[ 'totalWins' ] if allDataForTurnP1 is not None else None
-					totalLossesP1 = allDataForTurnP1[ 'totalLosses' ] if allDataForTurnP1 is not None else None
-					totalMovesP1 = allDataForTurnP1[ 'totalMoves' ] if allDataForTurnP1 is not None else None
-					totalPayoffP1 = allDataForTurnP1[ 'payoff' ] if allDataForTurnP1 is not None else None
 
-					totalWinsP2 = allDataForTurnP2[ 'totalWins' ] if allDataForTurnP2 is not None else None
-					totalLossesP2 = allDataForTurnP2[ 'totalLosses' ] if allDataForTurnP2 is not None else None
-					totalMovesP2 = allDataForTurnP2[ 'totalMoves' ] if allDataForTurnP2 is not None else None
-					totalPayoffP2 = allDataForTurnP2[ 'payoff' ] if allDataForTurnP2 is not None else None
-
-					turnsFile.write( '{},{},{},{},{},{},{},{},{},{}\n'.format(
+					turnsFile.write( '{},{},{},{},{},{},{},{},{},{},{},{}\n'.format(
 						i,
 						turn,
-						float( totalWinsP1 ) / float( i ) if totalWinsP1 is not None else '-' if totalWinsP1 != 0 else 0,
-						float( totalWinsP2 ) / float( i ) if totalWinsP2 is not None else '-' if totalWinsP2 != 0 else 0,
-						float( totalLossesP1 ) / float( i ) if totalLossesP1 is not None else '-' if totalLossesP1 != 0 else 0,
-						float( totalLossesP2 ) / float( i )if totalLossesP2 is not None else '-' if totalLossesP2 != 0 else 0,
-						float( totalMovesP1 ) / float( i )if totalMovesP1 is not None else '-' if totalMovesP1 != 0 else 0,
-						float( totalMovesP2 ) / float( i )if totalMovesP2 is not None else '-' if totalMovesP2 != 0 else 0,
-						float( totalPayoffP1 ) / float( i ) if totalPayoffP1 is not None else '-' if totalPayoffP1 != 0 else 0,
-						float( totalPayoffP2 ) / float( i ) if totalPayoffP2 is not None else '-' if totalPayoffP2 != 0 else 0,
+						allDataForTurnP1[ 'count' ] if allDataForTurnP1 is not None else '-',
+						allDataForTurnP2[ 'count' ] if allDataForTurnP2 is not None else '-',
+						allDataForTurnP1[ 'totalWins' ] if allDataForTurnP1 is not None else '-',
+						allDataForTurnP2[ 'totalWins' ] if allDataForTurnP2 is not None else '-',
+						allDataForTurnP1[ 'totalLosses' ] if allDataForTurnP1 is not None else '-',
+						allDataForTurnP2[ 'totalLosses' ] if allDataForTurnP2 is not None else '-',
+						allDataForTurnP1[ 'totalMoves' ] if allDataForTurnP1 is not None else '-',
+						allDataForTurnP2[ 'totalMoves' ] if allDataForTurnP2 is not None else '-',
+						allDataForTurnP1[ 'payoff' ] if allDataForTurnP1 is not None else '-',
+						allDataForTurnP2[ 'payoff' ] if allDataForTurnP2 is not None else '-',
 					))

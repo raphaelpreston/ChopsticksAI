@@ -17,12 +17,17 @@ class Game:
 	def playOutGame( self, strat1, strat2 ): # returns path to get to end
 		# play to end 
 		path = []
+		turnIter = 100
+		i = 1
 		while not self.currState.isTerminal():
+			if i % turnIter == 0:
+				print( '# game at {} turns'.format( i ) )
 			path.append( self.currState )
 			if self.currState.turn == 1:
 				self.currState = strat1.calcNextMove( self )
 			else:
 				self.currState = strat2.calcNextMove( self )
+			i += 1
 		path.append( self.currState )
 		return path
 	
