@@ -13,7 +13,7 @@ regEx = re.compile( '^(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*),(.*
 d1 = 0
 d2 = 0
 fileName = "MaxPayoffSearchStrat({})-MaxPayoffSearchStrat({})".format( d1, d2 )
-filePath = "payoffs/{}".format( fileName )
+filePath = "turn_data/{}".format( fileName )
 if path.exists( filePath ):
 	with open( filePath, "r" ) as f:
 		oldIter = 1
