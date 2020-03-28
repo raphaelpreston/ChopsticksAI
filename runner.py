@@ -49,7 +49,6 @@ import json
 
 
 # TODO next: build the tree up from the bottom to get the true values
-# TODO: would be cool to graph whether or not the AIs chance of winning goes up as the game goes forward
 # TODO: Another genetic strat that learns as it plays against the raw looking forward strat
 
 
@@ -59,7 +58,7 @@ initialState = GameState( PlayerState( 1, 1 ), PlayerState( 1, 1 ), 1 )
 # print every _ games
 printNum = 1
 n = 50 # number of games
-depth1 = 0 # edit this between consoles
+depth1 = 9 # edit this between consoles
 for depth2 in range( 0, 9 + 1 ): # 10 total
 	totalP1Wins = 0
 	totalP2Wins = 0
